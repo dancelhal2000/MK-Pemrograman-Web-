@@ -99,7 +99,8 @@ table {
     border-collapse: collapse;
 }
 
-th, td {
+th,
+td {
     text-align: left;
     padding: 0.65rem 0.75rem;
     border-bottom: 1px solid #e2e6ea;
@@ -129,6 +130,11 @@ td button {
 
 td button:first-of-type {
     background-color: #f0ad4e;
+    color: #fff;
+}
+
+.Detail {
+    background-color: #000000;
     color: #fff;
 }
 
