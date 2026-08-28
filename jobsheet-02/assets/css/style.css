@@ -13,7 +13,7 @@ body {
 }
 
 a {
-    color: #1d5b8a;
+    color: #0f8021;
     text-decoration: none;
 }
 
@@ -23,7 +23,7 @@ a:hover {
 
 /* ===== Header & Navbar (Flexbox) ===== */
 header {
-    background-color: #1d5b8a;
+    background-color: #0f8021;
     color: #fff;
     padding: 1rem 1.5rem;
     display: flex;
@@ -64,7 +64,7 @@ section {
 
 section h2 {
     margin-bottom: 1rem;
-    color: #1d5b8a;
+    color: #0f8021;
 }
 
 /* ===== Kartu Statistik (CSS Grid) ===== */
@@ -90,7 +90,7 @@ main section:nth-of-type(2) article h3 {
 main section:nth-of-type(2) article p {
     font-size: 1.8rem;
     font-weight: 700;
-    color: #1d5b8a;
+    color: #0f8021;
 }
 
 /* ===== Tabel ===== */
@@ -106,7 +106,7 @@ th, td {
 }
 
 thead {
-    background-color: #1d5b8a;
+    background-color: #0f8021;
     color: #fff;
 }
 
@@ -160,7 +160,7 @@ form select {
 }
 
 form button[type="submit"] {
-    background-color: #1d5b8a;
+    background-color: #0f8021;
     color: #fff;
     border: none;
     padding: 0.6rem 1.5rem;
