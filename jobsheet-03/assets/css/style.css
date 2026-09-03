@@ -207,6 +207,12 @@ footer {
 
 /* ===== Responsive Breakpoints ===== */
 
+@media (min-width: 1400px) {
+    main {
+        max-width: 1300px;
+    }
+}
+
 /* Tablet ke bawah */
 @media (max-width: 768px) {
     main section:nth-of-type(2) {
@@ -249,9 +255,4 @@ footer {
         max-width: 100%;
     }
 
-    @media (min-width: 1400px) {
-        main {
-            max-width: 1300px;
-        }
-    }
 }
