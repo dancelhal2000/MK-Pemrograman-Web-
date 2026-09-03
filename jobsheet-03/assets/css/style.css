@@ -99,7 +99,8 @@ table {
     border-collapse: collapse;
 }
 
-th, td {
+th,
+td {
     text-align: left;
     padding: 0.65rem 0.75rem;
     border-bottom: 1px solid #e2e6ea;
@@ -230,7 +231,7 @@ footer {
         margin-top: 1rem;
     }
 
-    .nav-toggle:checked ~ nav {
+    .nav-toggle:checked~nav {
         display: block;
     }
 
@@ -246,5 +247,11 @@ footer {
     form input,
     form select {
         max-width: 100%;
+    }
+
+    @media (min-width: 1400px) {
+        main {
+            max-width: 1300px;
+        }
     }
 }
