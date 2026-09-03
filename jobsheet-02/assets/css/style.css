@@ -133,8 +133,9 @@ td button:first-of-type {
     color: #fff;
 }
 
+.detail,
 .Detail {
-    background-color: #000000;
+    background-color: #1ba91d;
     color: #fff;
 }
 
