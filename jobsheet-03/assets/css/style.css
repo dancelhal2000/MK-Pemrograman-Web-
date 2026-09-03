@@ -205,6 +205,18 @@ footer {
     cursor: pointer;
 }
 
+pre {
+    overflow-x: auto;
+    white-space: pre;
+    max-width: 100%;
+    background-color: #2b2b2b;
+    color: #f5f6f8;
+    padding: 0.75rem 1rem;
+    border-radius: 6px;
+    font-family: monospace;
+    font-size: 0.9rem;
+}
+
 /* ===== Responsive Breakpoints ===== */
 
 @media (min-width: 1400px) {
