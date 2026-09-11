@@ -10,15 +10,42 @@ function initNavToggle() {
     });
 }
 
+// ===== Counter jumlah baris tersisa (Latihan 8.4 No. 4) =====
+function updateRowCounter(table) {
+    if (!table) return;
+    const searchBox = document.querySelector(".search-box") || table.closest(".table-responsive");
+    let counter = document.getElementById("row-counter");
+    if (!counter && searchBox) {
+        counter = document.createElement("p");
+        counter.id = "row-counter";
+        counter.className = "row-counter";
+        searchBox.insertAdjacentElement("afterend", counter);
+    }
+    if (!counter) return;
+
+    const rows = table.querySelectorAll("tbody tr");
+    const total = rows.length;
+    const visible = Array.from(rows).filter(function (r) {
+        return r.style.display !== "none";
+    }).length;
+
+    const heading = document.querySelector("main h2")?.textContent.toLowerCase() || "";
+    const entity = heading.includes("buku") ? "buku" : (heading.includes("anggota") ? "anggota" : "data");
+
+    counter.textContent = "Menampilkan " + visible + " dari " + total + " " + entity;
+}
+
 // ===== Konfirmasi hapus (front-end only, belum ke server) =====
 function initHapusConfirm() {
     document.querySelectorAll(".btn-hapus").forEach(function (btn) {
         btn.addEventListener("click", function () {
             const row = btn.closest("tr");
+            const table = row ? row.closest("table") : null;
             const nama = row ? row.querySelector("td")?.textContent : "data ini";
             const yakin = confirm("Yakin ingin menghapus \"" + nama + "\"?");
             if (yakin && row) {
                 row.remove();
+                if (table) updateRowCounter(table);
             }
         });
     });
@@ -28,7 +55,12 @@ function initHapusConfirm() {
 function initTableFilter() {
     const input = document.getElementById("search-input");
     const table = document.querySelector(".table-responsive table");
-    if (!input || !table) return;
+    if (!table) return;
+
+    // Tampilkan counter saat halaman pertama kali dimuat
+    updateRowCounter(table);
+
+    if (!input) return;
 
     // Cari kolom target pencarian: kolom "Judul" pada buku, atau "Nama" pada anggota
     const headers = Array.from(table.querySelectorAll("thead th"));
@@ -48,6 +80,7 @@ function initTableFilter() {
             const teks = targetCell ? targetCell.textContent.toLowerCase() : "";
             row.style.display = teks.includes(keyword) ? "" : "none";
         });
+        updateRowCounter(table);
     });
 }
 
