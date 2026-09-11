@@ -5,7 +5,8 @@ function initNavToggle() {
     if (!toggleBtn || !nav) return;
 
     toggleBtn.addEventListener("click", function () {
-        nav.classList.toggle("nav-open");
+        const isOpen = nav.classList.toggle("nav-open");
+        toggleBtn.setAttribute("aria-expanded", isOpen);
     });
 }
 

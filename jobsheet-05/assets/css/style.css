@@ -99,7 +99,8 @@ table {
     border-collapse: collapse;
 }
 
-th, td {
+th,
+td {
     text-align: left;
     padding: 0.65rem 0.75rem;
     border-bottom: 1px solid #e2e6ea;
@@ -200,14 +201,28 @@ footer {
     background: none;
     border: none;
     cursor: pointer;
+    transition: transform 0.2s ease, opacity 0.2s ease;
+}
+
+.nav-toggle-label:hover {
+    opacity: 0.85;
+}
+
+.nav-toggle-label:active {
+    transform: scale(0.92);
 }
 
 /* ===== Pesan Error Validasi ===== */
-.error {
+.error,
+.error-msg {
     display: block;
     color: #d9534f;
     font-size: 0.85rem;
     margin-top: 0.25rem;
+}
+
+input.invalid {
+    border-color: #d9534f;
 }
 
 /* ===== Kolom Pencarian ===== */
@@ -261,14 +276,20 @@ pre {
     }
 
     header nav {
-        display: none;
+        display: block;
         width: 100%;
         order: 3;
-        margin-top: 1rem;
+        max-height: 0;
+        overflow: hidden;
+        opacity: 0;
+        margin-top: 0;
+        transition: max-height 0.35s ease, opacity 0.3s ease, margin-top 0.35s ease;
     }
 
     header nav.nav-open {
-        display: block;
+        max-height: 300px;
+        opacity: 1;
+        margin-top: 1rem;
     }
 
     header nav ul {
