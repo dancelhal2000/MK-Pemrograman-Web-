@@ -87,6 +87,7 @@ function initTableFilter() {
 // ===== Validasi form (client-side) =====
 function tampilkanError(input, pesan) {
     hapusError(input);
+    input.classList.add("invalid");
     const span = document.createElement("span");
     span.className = "error";
     span.textContent = pesan;
@@ -94,107 +95,102 @@ function tampilkanError(input, pesan) {
 }
 
 function hapusError(input) {
+    input.classList.remove("invalid");
     const next = input.nextElementSibling;
-    if (next && next.classList.contains("error")) {
+    if (next && (next.classList.contains("error") || next.classList.contains("error-msg"))) {
         next.remove();
     }
-}
-
-// Ambil elemen input dan container error
-const isbnInput = document.getElementById('isbn');
-const errorIsbn = document.getElementById('error-isbn');
-
-// Regex: hanya mengizinkan angka (0-9) dan tanda hubung (-)
-const isbnPattern = /^[0-9-]+$/;
-
-function validateIsbn() {
-    const value = isbnInput.value.trim();
-
-    // Karena opsional: jika kosong, dianggap valid
-    if (value === '') {
-        if (errorIsbn) errorIsbn.textContent = '';
-        isbnInput.classList.remove('invalid');
-        return true;
+    const errorIsbn = document.getElementById("error-isbn");
+    if (errorIsbn && input.id === "isbn") {
+        errorIsbn.textContent = "";
     }
-
-    // Jika diisi, periksa apakah sesuai pola angka dan tanda hubung
-    if (!isbnPattern.test(value)) {
-        if (errorIsbn) {
-            errorIsbn.textContent = 'ISBN hanya boleh berisi angka dan tanda hubung (-).';
-        }
-        isbnInput.classList.add('invalid');
-        return false;
-    }
-
-    // Valid
-    if (errorIsbn) errorIsbn.textContent = '';
-    isbnInput.classList.remove('invalid');
-    return true;
 }
 
-// Integrasi pada event submit form buku
-const formBuku = document.querySelector('form');
-if (formBuku && isbnInput) {
-    formBuku.addEventListener('submit', function (e) {
-        const isIsbnValid = validateIsbn();
-
-        if (!isIsbnValid) {
-            e.preventDefault(); // Batalkan pengiriman jika tidak valid
-        }
-    });
-
-    // Validasi realtime saat pengguna mengetik (opsional)
-    isbnInput.addEventListener('input', validateIsbn);
-}
-
+// ===== Refactor Validasi Form (Latihan 8.4 No. 5) =====
 function initValidasiForm() {
     const form = document.getElementById("form-tambah");
     if (!form) return;
 
+    // Daftar aturan validasi field berbasis array
+    const aturanValidasi = [
+        {
+            selector: "[name='judul'], [name='nama']",
+            pesan: "Field ini wajib diisi.",
+            cek: function (input) {
+                return input.value.trim() !== "";
+            }
+        },
+        {
+            selector: "[name='pengarang']",
+            pesan: "Pengarang wajib diisi.",
+            cek: function (input) {
+                return input.value.trim() !== "";
+            }
+        },
+        {
+            selector: "[name='no_anggota']",
+            pesan: "No. Anggota wajib diisi.",
+            cek: function (input) {
+                return input.value.trim() !== "";
+            }
+        },
+        {
+            selector: "[name='tahun']",
+            pesan: "Tahun harus di antara 1900-2026.",
+            cek: function (input) {
+                const nilai = parseInt(input.value, 10);
+                return !isNaN(nilai) && nilai >= 1900 && nilai <= 2026;
+            }
+        },
+        {
+            selector: "[name='stok']",
+            pesan: "Stok tidak boleh negatif.",
+            cek: function (input) {
+                const nilai = parseInt(input.value, 10);
+                return !isNaN(nilai) && nilai >= 0;
+            }
+        },
+        {
+            selector: "[name='isbn']",
+            pesan: "ISBN hanya boleh berisi angka dan tanda hubung (-).",
+            cek: function (input) {
+                const val = input.value.trim();
+                return val === "" || /^[0-9-]+$/.test(val);
+            }
+        }
+    ];
+
     form.addEventListener("submit", function (e) {
         let valid = true;
 
-        const judul = form.querySelector("[name='judul'], [name='nama']");
-        if (judul && judul.value.trim() === "") {
-            tampilkanError(judul, "Field ini wajib diisi.");
-            valid = false;
-        } else if (judul) {
-            hapusError(judul);
-        }
+        // Validasi tiap field menggunakan loop forEach pada array aturan
+        aturanValidasi.forEach(function (aturan) {
+            const input = form.querySelector(aturan.selector);
+            if (!input) return; // Guard clause jika elemen tidak ada di halaman ini
 
-        const pengarang = form.querySelector("[name='pengarang']");
-        if (pengarang && pengarang.value.trim() === "") {
-            tampilkanError(pengarang, "Pengarang wajib diisi.");
-            valid = false;
-        } else if (pengarang) {
-            hapusError(pengarang);
-        }
-
-        const tahun = form.querySelector("[name='tahun']");
-        if (tahun) {
-            const nilai = parseInt(tahun.value, 10);
-            if (isNaN(nilai) || nilai < 1900 || nilai > 2026) {
-                tampilkanError(tahun, "Tahun harus di antara 1900-2026.");
+            if (!aturan.cek(input)) {
+                tampilkanError(input, aturan.pesan);
                 valid = false;
             } else {
-                hapusError(tahun);
+                hapusError(input);
             }
-        }
-
-        const stok = form.querySelector("[name='stok']");
-        if (stok) {
-            const nilai = parseInt(stok.value, 10);
-            if (isNaN(nilai) || nilai < 0) {
-                tampilkanError(stok, "Stok tidak boleh negatif.");
-                valid = false;
-            } else {
-                hapusError(stok);
-            }
-        }
+        });
 
         if (!valid) {
             e.preventDefault();
         }
+    });
+
+    // Hapus pesan error secara real-time saat pengguna memperbaiki input
+    aturanValidasi.forEach(function (aturan) {
+        const input = form.querySelector(aturan.selector);
+        if (!input) return;
+
+        input.addEventListener("input", function () {
+            if (aturan.cek(input)) {
+                hapusError(input);
+            }
+        });
     });
 }
 
