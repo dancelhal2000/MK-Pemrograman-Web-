@@ -1,46 +1,10 @@
-// Mengambil & menampilkan Daftar Anggota secara asinkron dari data/anggota.json
+// assets/js/anggota.js
+// Catatan: Latihan 8.4 No. 2 - buku.js & anggota.js telah disatukan menjadi fungsi generik muatDataTabel().
+// File implementasi utama berada di assets/js/tabel.js.
+
 async function muatDaftarAnggota() {
-    const tbody = document.querySelector(".table-responsive table tbody");
-    const loading = document.getElementById("loading-indicator");
-    if (!tbody) return;
-
-    if (loading) loading.style.display = "block";
-    tbody.innerHTML = "";
-
-    try {
-        await new Promise((resolve) => setTimeout(resolve, 600));
-
-        const res = await fetch("../data/anggota.json");
-        if (!res.ok) {
-            throw new Error("Gagal mengambil data (status " + res.status + ")");
-        }
-        const daftarAnggota = await res.json();
-
-        daftarAnggota.forEach(function (anggota) {
-            const tr = document.createElement("tr");
-            tr.innerHTML =
-                "<td>" + anggota.no_anggota + "</td>" +
-                "<td>" + anggota.nama + "</td>" +
-                "<td>" + anggota.alamat + "</td>" +
-                "<td>" + anggota.no_hp + "</td>" +
-                "<td>" + (anggota.tanggal_bergabung || "-") + "</td>" +
-                "<td>" +
-                "<button type=\"button\">Edit</button> " +
-                "<button type=\"button\" class=\"btn-hapus\">Hapus</button>" +
-                "</td>";
-            tbody.appendChild(tr);
-        });
-
-        // Perbarui counter baris setelah data selesai dirender
-        const table = tbody.closest("table");
-        if (table && typeof updateRowCounter === "function") {
-            updateRowCounter(table);
-        }
-    } catch (err) {
-        tbody.innerHTML =
-            "<tr><td colspan=\"6\">Gagal memuat data: " + err.message + "</td></tr>";
-    } finally {
-        if (loading) loading.style.display = "none";
+    if (typeof muatDataTabel === "function") {
+        return muatDataTabel("../data/anggota.json", ["no_anggota", "nama", "alamat", "no_hp", "tanggal_bergabung"]);
     }
 }
 
@@ -55,7 +19,11 @@ function initReloadBtn() {
     });
 }
 
-document.addEventListener("DOMContentLoaded", function () {
-    muatDaftarAnggota();
-    initReloadBtn();
-});
+// Hanya inisialisasi jika belum ditangani oleh tabel.js
+if (typeof muatDataTabel !== "function") {
+    document.addEventListener("DOMContentLoaded", function () {
+        muatDaftarAnggota();
+        initReloadBtn();
+    });
+}
+
