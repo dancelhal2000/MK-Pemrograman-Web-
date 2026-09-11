@@ -45,4 +45,18 @@ async function muatDaftarBuku() {
     }
 }
 
-document.addEventListener("DOMContentLoaded", muatDaftarBuku);
+function initReloadBtn() {
+    const btnReload = document.getElementById("btn-reload");
+    if (!btnReload) return;
+
+    btnReload.addEventListener("click", function () {
+        const searchInput = document.getElementById("search-input");
+        if (searchInput) searchInput.value = "";
+        muatDaftarBuku();
+    });
+}
+
+document.addEventListener("DOMContentLoaded", function () {
+    muatDaftarBuku();
+    initReloadBtn();
+});

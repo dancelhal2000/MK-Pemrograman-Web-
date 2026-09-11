@@ -44,4 +44,18 @@ async function muatDaftarAnggota() {
     }
 }
 
-document.addEventListener("DOMContentLoaded", muatDaftarAnggota);
+function initReloadBtn() {
+    const btnReload = document.getElementById("btn-reload");
+    if (!btnReload) return;
+
+    btnReload.addEventListener("click", function () {
+        const searchInput = document.getElementById("search-input");
+        if (searchInput) searchInput.value = "";
+        muatDaftarAnggota();
+    });
+}
+
+document.addEventListener("DOMContentLoaded", function () {
+    muatDaftarAnggota();
+    initReloadBtn();
+});

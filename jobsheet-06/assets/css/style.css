@@ -230,12 +230,39 @@ input.invalid {
     margin-bottom: 1rem;
 }
 
+.search-actions {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
 .search-box input {
     width: 100%;
     max-width: 320px;
     padding: 0.5rem 0.75rem;
     border: 1px solid #cdd4da;
     border-radius: 4px;
+}
+
+.btn-reload {
+    padding: 0.5rem 1rem;
+    background-color: #0f8021;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    font-weight: 500;
+    transition: background-color 0.2s ease, transform 0.1s ease;
+}
+
+.btn-reload:hover {
+    background-color: #0b5e18;
+}
+
+.btn-reload:active {
+    transform: scale(0.96);
 }
 
 /* ===== Counter Baris Tabel ===== */
