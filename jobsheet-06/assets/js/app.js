@@ -41,7 +41,11 @@ function updateRowCounter(table) {
 // tombol .btn-hapus belum tentu ada saat DOMContentLoaded.
 function initHapusConfirm() {
     document.addEventListener("click", function (e) {
+        // [Latihan 8.4 No. 4] Menguji Event Delegation
+        console.log("[Event Delegation] Element yang diklik (e.target):", e.target);
         const btn = e.target.closest(".btn-hapus");
+        console.log("[Event Delegation] Hasil e.target.closest('.btn-hapus'):", btn);
+
         if (!btn) return;
 
         const row = btn.closest("tr");
