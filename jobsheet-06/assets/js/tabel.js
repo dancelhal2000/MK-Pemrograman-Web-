@@ -94,7 +94,7 @@ function initReloadBtn(reloadCallback) {
 
 // Wrapper fungsi untuk data buku
 function muatDaftarBuku() {
-    return muatDataTabel("../data/buku.json", ["judul", "pengarang", "tahun", "stok"], {
+    return muatDataTabel("../data/buku.json", ["judul", "pengarang", "kategori", "tahun", "stok"], {
         includeDetail: true
     });
 }
