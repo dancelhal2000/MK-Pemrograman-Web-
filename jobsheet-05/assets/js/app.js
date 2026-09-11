@@ -55,6 +55,53 @@ function hapusError(input) {
     }
 }
 
+// Ambil elemen input dan container error
+const isbnInput = document.getElementById('isbn');
+const errorIsbn = document.getElementById('error-isbn');
+
+// Regex: hanya mengizinkan angka (0-9) dan tanda hubung (-)
+const isbnPattern = /^[0-9-]+$/;
+
+function validateIsbn() {
+    const value = isbnInput.value.trim();
+
+    // Karena opsional: jika kosong, dianggap valid
+    if (value === '') {
+        if (errorIsbn) errorIsbn.textContent = '';
+        isbnInput.classList.remove('invalid');
+        return true;
+    }
+
+    // Jika diisi, periksa apakah sesuai pola angka dan tanda hubung
+    if (!isbnPattern.test(value)) {
+        if (errorIsbn) {
+            errorIsbn.textContent = 'ISBN hanya boleh berisi angka dan tanda hubung (-).';
+        }
+        isbnInput.classList.add('invalid');
+        return false;
+    }
+
+    // Valid
+    if (errorIsbn) errorIsbn.textContent = '';
+    isbnInput.classList.remove('invalid');
+    return true;
+}
+
+// Integrasi pada event submit form buku
+const formBuku = document.querySelector('form');
+if (formBuku && isbnInput) {
+    formBuku.addEventListener('submit', function (e) {
+        const isIsbnValid = validateIsbn();
+
+        if (!isIsbnValid) {
+            e.preventDefault(); // Batalkan pengiriman jika tidak valid
+        }
+    });
+
+    // Validasi realtime saat pengguna mengetik (opsional)
+    isbnInput.addEventListener('input', validateIsbn);
+}
+
 function initValidasiForm() {
     const form = document.getElementById("form-tambah");
     if (!form) return;

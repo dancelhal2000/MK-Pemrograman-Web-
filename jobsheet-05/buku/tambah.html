@@ -1,11 +1,13 @@
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>SIMPUS-Mini | Tambah Buku</title>
     <link rel="stylesheet" href="../assets/css/style.css">
 </head>
+
 <body>
     <header>
         <h1>SIMPUS-Mini</h1>
@@ -42,6 +44,11 @@
                     <input type="text" id="isbn" name="isbn">
                 </p>
                 <p>
+                    <label for="isbn">ISBN (Opsional)</label>
+                    <input type="text" id="isbn" name="isbn" placeholder="Contoh: 978-602-03-8591-4">
+                    <small class="error-msg" id="error-isbn"></small>
+                </p>
+                <p>
                     <label for="stok">Stok</label><br>
                     <input type="number" id="stok" name="stok" min="0" required>
                 </p>
@@ -65,4 +72,5 @@
     </footer>
     <script src="../assets/js/app.js"></script>
 </body>
+
 </html>
