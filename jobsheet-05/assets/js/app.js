@@ -24,17 +24,28 @@ function initHapusConfirm() {
     });
 }
 
-// ===== Filter/pencarian tabel real-time =====
+// ===== Filter/pencarian tabel real-time (dibatasi pada kolom tertentu) =====
 function initTableFilter() {
     const input = document.getElementById("search-input");
     const table = document.querySelector(".table-responsive table");
     if (!input || !table) return;
 
+    // Cari kolom target pencarian: kolom "Judul" pada buku, atau "Nama" pada anggota
+    const headers = Array.from(table.querySelectorAll("thead th"));
+    let targetIndex = headers.findIndex(function (th) {
+        const text = th.textContent.toLowerCase();
+        return text.includes("judul") || text.includes("nama");
+    });
+    if (targetIndex === -1) targetIndex = 0;
+
     input.addEventListener("keyup", function () {
         const keyword = input.value.toLowerCase();
         const rows = table.querySelectorAll("tbody tr");
         rows.forEach(function (row) {
-            const teks = row.textContent.toLowerCase();
+            // Ambil sel pada kolom target (menggunakan pola querySelector('td') seperti di bab 5 §5.4)
+            const cells = row.querySelectorAll("td");
+            const targetCell = cells[targetIndex] || row.querySelector("td");
+            const teks = targetCell ? targetCell.textContent.toLowerCase() : "";
             row.style.display = teks.includes(keyword) ? "" : "none";
         });
     });
