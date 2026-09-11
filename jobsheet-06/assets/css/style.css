@@ -13,7 +13,7 @@ body {
 }
 
 a {
-    color: #1d5b8a;
+    color: #0f8021;
     text-decoration: none;
 }
 
@@ -23,7 +23,7 @@ a:hover {
 
 /* ===== Header & Navbar (Flexbox) ===== */
 header {
-    background-color: #1d5b8a;
+    background-color: #0f8021;
     color: #fff;
     padding: 1rem 1.5rem;
     display: flex;
@@ -64,7 +64,7 @@ section {
 
 section h2 {
     margin-bottom: 1rem;
-    color: #1d5b8a;
+    color: #0f8021;
 }
 
 /* ===== Kartu Statistik (CSS Grid) ===== */
@@ -90,7 +90,7 @@ main section:nth-of-type(2) article h3 {
 main section:nth-of-type(2) article p {
     font-size: 1.8rem;
     font-weight: 700;
-    color: #1d5b8a;
+    color: #0f8021;
 }
 
 /* ===== Tabel ===== */
@@ -99,14 +99,15 @@ table {
     border-collapse: collapse;
 }
 
-th, td {
+th,
+td {
     text-align: left;
     padding: 0.65rem 0.75rem;
     border-bottom: 1px solid #e2e6ea;
 }
 
 thead {
-    background-color: #1d5b8a;
+    background-color: #0f8021;
     color: #fff;
 }
 
@@ -129,6 +130,12 @@ td button {
 
 td button:first-of-type {
     background-color: #f0ad4e;
+    color: #fff;
+}
+
+.detail,
+.Detail {
+    background-color: #1ba91d;
     color: #fff;
 }
 
@@ -160,7 +167,7 @@ form select {
 }
 
 form button[type="submit"] {
-    background-color: #1d5b8a;
+    background-color: #0f8021;
     color: #fff;
     border: none;
     padding: 0.6rem 1.5rem;
@@ -194,14 +201,28 @@ footer {
     background: none;
     border: none;
     cursor: pointer;
+    transition: transform 0.2s ease, opacity 0.2s ease;
+}
+
+.nav-toggle-label:hover {
+    opacity: 0.85;
+}
+
+.nav-toggle-label:active {
+    transform: scale(0.92);
 }
 
 /* ===== Pesan Error Validasi ===== */
-.error {
+.error,
+.error-msg {
     display: block;
     color: #d9534f;
     font-size: 0.85rem;
     margin-top: 0.25rem;
+}
+
+input.invalid {
+    border-color: #d9534f;
 }
 
 /* ===== Kolom Pencarian ===== */
@@ -217,10 +238,44 @@ footer {
     border-radius: 4px;
 }
 
+/* ===== Counter Baris Tabel ===== */
+.row-counter {
+    font-size: 0.9rem;
+    color: #55677a;
+    margin-top: -0.25rem;
+    margin-bottom: 0.85rem;
+    font-weight: 500;
+}
+
+/* ===== Loading Indicator (Jobsheet 6) ===== */
+#loading-indicator {
+    color: #55677a;
+    font-style: italic;
+    margin-bottom: 0.75rem;
+}
+
+pre {
+    overflow-x: auto;
+    white-space: pre;
+    max-width: 100%;
+    background-color: #2b2b2b;
+    color: #f5f6f8;
+    padding: 0.75rem 1rem;
+    border-radius: 6px;
+    font-family: monospace;
+    font-size: 0.9rem;
+}
+
 /* ===== Responsive Breakpoints ===== */
 
+@media (min-width: 1400px) {
+    main {
+        max-width: 1300px;
+    }
+}
+
 /* Tablet ke bawah */
-@media (max-width: 768px) {
+@media (max-width: 900px) {
     main section:nth-of-type(2) {
         grid-template-columns: repeat(2, 1fr);
     }
@@ -237,14 +292,20 @@ footer {
     }
 
     header nav {
-        display: none;
+        display: block;
         width: 100%;
         order: 3;
-        margin-top: 1rem;
+        max-height: 0;
+        overflow: hidden;
+        opacity: 0;
+        margin-top: 0;
+        transition: max-height 0.35s ease, opacity 0.3s ease, margin-top 0.35s ease;
     }
 
     header nav.nav-open {
-        display: block;
+        max-height: 300px;
+        opacity: 1;
+        margin-top: 1rem;
     }
 
     header nav ul {
