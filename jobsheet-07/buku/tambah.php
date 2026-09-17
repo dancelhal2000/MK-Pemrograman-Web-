@@ -26,8 +26,9 @@ unset($_SESSION['flash']);
                     <input type="number" id="tahun" name="tahun" min="1900" max="2026" required>
                 </p>
                 <p>
-                    <label for="isbn">ISBN</label><br>
-                    <input type="text" id="isbn" name="isbn">
+                    <label for="isbn">ISBN (Opsional)</label><br>
+                    <input type="text" id="isbn" name="isbn" placeholder="Contoh: 978-602-03-8591-4">
+                    <small class="error-msg" id="error-isbn"></small>
                 </p>
                 <p>
                     <label for="stok">Stok</label><br>

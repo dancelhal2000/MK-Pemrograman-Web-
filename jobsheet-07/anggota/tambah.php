@@ -30,6 +30,10 @@ unset($_SESSION['flash']);
                     <input type="text" id="no_hp" name="no_hp">
                 </p>
                 <p>
+                    <label for="email">Email</label><br>
+                    <input type="email" id="email" name="email">
+                </p>
+                <p>
                     <button type="submit">Simpan</button>
                 </p>
             </form>

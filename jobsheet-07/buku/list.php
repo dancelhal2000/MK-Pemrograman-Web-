@@ -15,7 +15,10 @@ $daftarBuku = $_SESSION['buku'] ?? [];
 
             <div class="search-box">
                 <label for="search-input">Cari Judul Buku</label>
-                <input type="text" id="search-input" placeholder="Ketik judul buku...">
+                <div class="search-actions">
+                    <input type="text" id="search-input" placeholder="Ketik judul buku...">
+                    <button type="button" id="btn-reload" class="btn-reload">Muat Ulang</button>
+                </div>
             </div>
 
             <div class="table-responsive">
@@ -24,6 +27,7 @@ $daftarBuku = $_SESSION['buku'] ?? [];
                     <tr>
                         <th>Judul</th>
                         <th>Pengarang</th>
+                        <th>Kategori</th>
                         <th>Tahun</th>
                         <th>Stok</th>
                         <th>Aksi</th>
@@ -32,17 +36,19 @@ $daftarBuku = $_SESSION['buku'] ?? [];
                 <tbody>
                     <?php if (empty($daftarBuku)): ?>
                     <tr>
-                        <td colspan="5">Belum ada data buku. Silakan tambah lewat menu "Tambah Buku".</td>
+                        <td colspan="6">Belum ada data buku. Silakan tambah lewat menu "Tambah Buku".</td>
                     </tr>
                     <?php else: ?>
                         <?php foreach ($daftarBuku as $buku): ?>
                         <tr>
-                            <td><?php echo $buku['judul']; ?></td>
-                            <td><?php echo $buku['pengarang']; ?></td>
-                            <td><?php echo $buku['tahun']; ?></td>
-                            <td><?php echo $buku['stok']; ?></td>
+                            <td><?php echo htmlspecialchars($buku['judul']); ?></td>
+                            <td><?php echo htmlspecialchars($buku['pengarang']); ?></td>
+                            <td><?php echo htmlspecialchars(ucfirst($buku['kategori'] ?? '-')); ?></td>
+                            <td><?php echo htmlspecialchars($buku['tahun']); ?></td>
+                            <td><?php echo htmlspecialchars($buku['stok']); ?></td>
                             <td>
                                 <button type="button">Edit</button>
+                                <button type="button" class="detail">Detail</button>
                                 <button type="button" class="btn-hapus">Hapus</button>
                             </td>
                         </tr>

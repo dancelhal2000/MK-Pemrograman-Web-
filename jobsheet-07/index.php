@@ -25,4 +25,9 @@ $totalAnggota = count($_SESSION['anggota'] ?? []);
                 <p>0</p>
             </article>
         </section>
+
+        <section>
+            <h2>Terminal / Log Output</h2>
+            <pre>git clone https://github.com/perpustakaan-mini/aplikasi-sistem-informasi-perpustakaan-v3.git --branch master --depth 1</pre>
+        </section>
 <?php include __DIR__ . '/includes/footer.php'; ?>

@@ -5,6 +5,7 @@ $nama = trim($_POST['nama'] ?? '');
 $noAnggota = trim($_POST['no_anggota'] ?? '');
 $alamat = trim($_POST['alamat'] ?? '');
 $noHp = trim($_POST['no_hp'] ?? '');
+$email = trim($_POST['email'] ?? '');
 
 $errors = [];
 if ($nama === '') {
@@ -29,6 +30,8 @@ $_SESSION['anggota'][] = [
     'no_anggota' => $noAnggota,
     'alamat' => $alamat,
     'no_hp' => $noHp,
+    'email' => $email,
+    'tanggal_bergabung' => date('d-m-Y'),
 ];
 
 $_SESSION['flash'] = ['type' => 'success', 'pesan' => 'Anggota berhasil ditambahkan.'];

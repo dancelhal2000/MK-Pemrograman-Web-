@@ -5,47 +5,104 @@ function initNavToggle() {
     if (!toggleBtn || !nav) return;
 
     toggleBtn.addEventListener("click", function () {
-        nav.classList.toggle("nav-open");
+        const isOpen = nav.classList.toggle("nav-open");
+        toggleBtn.setAttribute("aria-expanded", isOpen);
     });
 }
 
-// ===== Konfirmasi hapus (front-end only, belum ke server) =====
-// Memakai event delegation di document karena baris tabel sekarang
-// dirender dinamis via fetch (lihat buku.js/anggota.js) sehingga
-// tombol .btn-hapus belum tentu ada saat DOMContentLoaded.
+// ===== Counter jumlah baris tersisa =====
+function updateRowCounter(table) {
+    if (!table) return;
+    const searchBox = document.querySelector(".search-box") || table.closest(".table-responsive");
+    let counter = document.getElementById("row-counter");
+    if (!counter && searchBox) {
+        counter = document.createElement("p");
+        counter.id = "row-counter";
+        counter.className = "row-counter";
+        searchBox.insertAdjacentElement("afterend", counter);
+    }
+    if (!counter) return;
+
+    const rows = table.querySelectorAll("tbody tr");
+    const total = rows.length;
+    const visible = Array.from(rows).filter(function (r) {
+        return r.style.display !== "none";
+    }).length;
+
+    const heading = document.querySelector("main h2")?.textContent.toLowerCase() || "";
+    const entity = heading.includes("buku") ? "buku" : (heading.includes("anggota") ? "anggota" : "data");
+
+    counter.textContent = "Menampilkan " + visible + " dari " + total + " " + entity;
+}
+
+// ===== Konfirmasi hapus (front-end only, event delegation) =====
 function initHapusConfirm() {
     document.addEventListener("click", function (e) {
+        console.log("[Event Delegation] Element yang diklik (e.target):", e.target);
         const btn = e.target.closest(".btn-hapus");
+        console.log("[Event Delegation] Hasil e.target.closest('.btn-hapus'):", btn);
+
         if (!btn) return;
 
         const row = btn.closest("tr");
+        const table = row ? row.closest("table") : null;
         const nama = row ? row.querySelector("td")?.textContent : "data ini";
         const yakin = confirm("Yakin ingin menghapus \"" + nama + "\"?");
         if (yakin && row) {
             row.remove();
+            if (table) updateRowCounter(table);
         }
     });
 }
 
-// ===== Filter/pencarian tabel real-time =====
+// ===== Filter/pencarian tabel real-time (dibatasi pada kolom tertentu) =====
 function initTableFilter() {
     const input = document.getElementById("search-input");
     const table = document.querySelector(".table-responsive table");
-    if (!input || !table) return;
+    if (!table) return;
+
+    // Tampilkan counter saat halaman pertama kali dimuat
+    updateRowCounter(table);
+
+    if (!input) return;
+
+    // Cari kolom target pencarian: kolom "Judul" pada buku, atau "Nama" pada anggota
+    const headers = Array.from(table.querySelectorAll("thead th"));
+    let targetIndex = headers.findIndex(function (th) {
+        const text = th.textContent.toLowerCase();
+        return text.includes("judul") || text.includes("nama");
+    });
+    if (targetIndex === -1) targetIndex = 0;
 
     input.addEventListener("keyup", function () {
         const keyword = input.value.toLowerCase();
         const rows = table.querySelectorAll("tbody tr");
         rows.forEach(function (row) {
-            const teks = row.textContent.toLowerCase();
+            const cells = row.querySelectorAll("td");
+            const targetCell = cells[targetIndex] || row.querySelector("td");
+            const teks = targetCell ? targetCell.textContent.toLowerCase() : "";
             row.style.display = teks.includes(keyword) ? "" : "none";
         });
+        updateRowCounter(table);
+    });
+}
+
+// ===== Tombol Muat Ulang =====
+function initReloadBtn() {
+    const btnReload = document.getElementById("btn-reload");
+    if (!btnReload) return;
+
+    btnReload.addEventListener("click", function () {
+        const searchInput = document.getElementById("search-input");
+        if (searchInput) searchInput.value = "";
+        window.location.reload();
     });
 }
 
 // ===== Validasi form (client-side) =====
 function tampilkanError(input, pesan) {
     hapusError(input);
+    input.classList.add("invalid");
     const span = document.createElement("span");
     span.className = "error";
     span.textContent = pesan;
@@ -53,60 +110,102 @@ function tampilkanError(input, pesan) {
 }
 
 function hapusError(input) {
+    input.classList.remove("invalid");
     const next = input.nextElementSibling;
-    if (next && next.classList.contains("error")) {
+    if (next && (next.classList.contains("error") || next.classList.contains("error-msg"))) {
         next.remove();
+    }
+    const errorIsbn = document.getElementById("error-isbn");
+    if (errorIsbn && input.id === "isbn") {
+        errorIsbn.textContent = "";
     }
 }
 
+// ===== Refactor Validasi Form =====
 function initValidasiForm() {
     const form = document.getElementById("form-tambah");
     if (!form) return;
 
+    // Daftar aturan validasi field berbasis array
+    const aturanValidasi = [
+        {
+            selector: "[name='judul'], [name='nama']",
+            pesan: "Field ini wajib diisi.",
+            cek: function (input) {
+                return input.value.trim() !== "";
+            }
+        },
+        {
+            selector: "[name='pengarang']",
+            pesan: "Pengarang wajib diisi.",
+            cek: function (input) {
+                return input.value.trim() !== "";
+            }
+        },
+        {
+            selector: "[name='no_anggota']",
+            pesan: "No. Anggota wajib diisi.",
+            cek: function (input) {
+                return input.value.trim() !== "";
+            }
+        },
+        {
+            selector: "[name='tahun']",
+            pesan: "Tahun harus di antara 1900-2026.",
+            cek: function (input) {
+                const nilai = parseInt(input.value, 10);
+                return !isNaN(nilai) && nilai >= 1900 && nilai <= 2026;
+            }
+        },
+        {
+            selector: "[name='stok']",
+            pesan: "Stok tidak boleh negatif.",
+            cek: function (input) {
+                const nilai = parseInt(input.value, 10);
+                return !isNaN(nilai) && nilai >= 0;
+            }
+        },
+        {
+            selector: "[name='isbn']",
+            pesan: "ISBN hanya boleh berisi angka dan tanda hubung (-).",
+            cek: function (input) {
+                const val = input.value.trim();
+                return val === "" || /^[0-9-]+$/.test(val);
+            }
+        }
+    ];
+
     form.addEventListener("submit", function (e) {
         let valid = true;
 
-        const judul = form.querySelector("[name='judul'], [name='nama']");
-        if (judul && judul.value.trim() === "") {
-            tampilkanError(judul, "Field ini wajib diisi.");
-            valid = false;
-        } else if (judul) {
-            hapusError(judul);
-        }
+        // Validasi tiap field menggunakan loop forEach pada array aturan
+        aturanValidasi.forEach(function (aturan) {
+            const input = form.querySelector(aturan.selector);
+            if (!input) return; // Guard clause jika elemen tidak ada di halaman ini
 
-        const pengarang = form.querySelector("[name='pengarang']");
-        if (pengarang && pengarang.value.trim() === "") {
-            tampilkanError(pengarang, "Pengarang wajib diisi.");
-            valid = false;
-        } else if (pengarang) {
-            hapusError(pengarang);
-        }
-
-        const tahun = form.querySelector("[name='tahun']");
-        if (tahun) {
-            const nilai = parseInt(tahun.value, 10);
-            if (isNaN(nilai) || nilai < 1900 || nilai > 2026) {
-                tampilkanError(tahun, "Tahun harus di antara 1900-2026.");
+            if (!aturan.cek(input)) {
+                tampilkanError(input, aturan.pesan);
                 valid = false;
             } else {
-                hapusError(tahun);
+                hapusError(input);
             }
-        }
-
-        const stok = form.querySelector("[name='stok']");
-        if (stok) {
-            const nilai = parseInt(stok.value, 10);
-            if (isNaN(nilai) || nilai < 0) {
-                tampilkanError(stok, "Stok tidak boleh negatif.");
-                valid = false;
-            } else {
-                hapusError(stok);
-            }
-        }
+        });
 
         if (!valid) {
             e.preventDefault();
         }
+    });
+
+    // Hapus pesan error secara real-time saat pengguna memperbaiki input
+    aturanValidasi.forEach(function (aturan) {
+        const input = form.querySelector(aturan.selector);
+        if (!input) return;
+
+        input.addEventListener("input", function () {
+            if (aturan.cek(input)) {
+                hapusError(input);
+            }
+        });
     });
 }
 
@@ -114,5 +213,6 @@ document.addEventListener("DOMContentLoaded", function () {
     initNavToggle();
     initHapusConfirm();
     initTableFilter();
+    initReloadBtn();
     initValidasiForm();
 });
