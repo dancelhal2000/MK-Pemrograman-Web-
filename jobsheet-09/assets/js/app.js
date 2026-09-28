@@ -28,6 +28,28 @@ function initHapusConfirm() {
     });
 }
 
+// ===== Konfirmasi update (Latihan 7.4 No. 1) =====
+// Menambahkan konfirmasi sebelum data di-update ke server (buku/proses_edit.php,
+// anggota/proses_edit.php). Berbeda dengan Delete yang bersifat destruktif
+// permanen, konfirmasi Update bertujuan mencegah penyimpanan perubahan yang
+// tidak disengaja. Konfirmasi hanya dijalankan jika validasi form berhasil.
+function initUpdateConfirm() {
+    document.addEventListener("submit", function (e) {
+        if (e.defaultPrevented) return;
+
+        const form = e.target;
+        const isEditForm = form.classList.contains("form-edit") || (form.action && form.action.includes("proses_edit.php"));
+        if (!isEditForm) return;
+
+        const inputNama = form.querySelector("[name='judul'], [name='nama']");
+        const nama = inputNama && inputNama.value.trim() ? inputNama.value.trim() : "data ini";
+        const yakin = confirm("Yakin ingin menyimpan perubahan pada \"" + nama + "\"?");
+        if (!yakin) {
+            e.preventDefault();
+        }
+    });
+}
+
 // ===== Filter/pencarian tabel real-time =====
 function initTableFilter() {
     const input = document.getElementById("search-input");
@@ -114,6 +136,7 @@ function initValidasiForm() {
 document.addEventListener("DOMContentLoaded", function () {
     initNavToggle();
     initHapusConfirm();
+    initUpdateConfirm();
     initTableFilter();
     initValidasiForm();
 });
