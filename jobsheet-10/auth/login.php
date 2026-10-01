@@ -2,6 +2,13 @@
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
+
+// Cek auto-login dari cookie "Ingat Saya"
+if (!isset($_SESSION['user_id']) && isset($_COOKIE['remember_token'])) {
+    require_once __DIR__ . '/../includes/remember.php';
+    restore_remember_session();
+}
+
 if (isset($_SESSION['user_id'])) {
     header('Location: ../index.php');
     exit;
@@ -28,6 +35,11 @@ unset($_SESSION['flash']);
                 <p>
                     <label for="password">Password</label><br>
                     <input type="password" id="password" name="password" required>
+                </p>
+                <p>
+                    <label class="checkbox-label">
+                        <input type="checkbox" name="remember" value="1"> Ingat Saya
+                    </label>
                 </p>
                 <p>
                     <button type="submit">Masuk</button>
