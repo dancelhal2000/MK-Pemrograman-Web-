@@ -19,6 +19,9 @@ include __DIR__ . '/../includes/header.php';
 
 $flash = $_SESSION['flash'] ?? null;
 unset($_SESSION['flash']);
+
+$lastUsername = $_SESSION['last_username'] ?? '';
+unset($_SESSION['last_username']);
 ?>
         <section>
             <h2>Login Petugas</h2>
@@ -30,7 +33,7 @@ unset($_SESSION['flash']);
             <form method="post" action="proses_login.php">
                 <p>
                     <label for="username">Username</label><br>
-                    <input type="text" id="username" name="username" required>
+                    <input type="text" id="username" name="username" value="<?php echo htmlspecialchars($lastUsername); ?>" required>
                 </p>
                 <p>
                     <label for="password">Password</label><br>
