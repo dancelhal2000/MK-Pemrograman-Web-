@@ -7,6 +7,10 @@ require __DIR__ . '/../includes/koneksi.php';
 $nama = trim($_POST['nama'] ?? '');
 $username = trim($_POST['username'] ?? '');
 $password = $_POST['password'] ?? '';
+$role = trim($_POST['role'] ?? 'petugas');
+if (!in_array($role, ['petugas', 'admin'])) {
+    $role = 'petugas';
+}
 
 $errors = [];
 if ($nama === '') {
@@ -34,12 +38,13 @@ if ($cek->fetch()) {
 }
 
 $stmt = $pdo->prepare(
-    "INSERT INTO users (nama, username, password, role) VALUES (:nama, :username, :password, 'petugas')"
+    "INSERT INTO users (nama, username, password, role) VALUES (:nama, :username, :password, :role)"
 );
 $stmt->execute([
     'nama' => $nama,
     'username' => $username,
     'password' => password_hash($password, PASSWORD_DEFAULT),
+    'role' => $role,
 ]);
 
 $_SESSION['flash'] = ['type' => 'success', 'pesan' => 'Registrasi berhasil, silakan login.'];
