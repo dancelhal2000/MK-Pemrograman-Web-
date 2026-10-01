@@ -2,6 +2,13 @@
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
+
+// Coba pulihkan sesi dari cookie "Ingat Saya" jika belum login
+if (!isset($_SESSION['user_id']) && isset($_COOKIE['remember_token'])) {
+    require_once __DIR__ . '/remember.php';
+    restore_remember_session();
+}
+
 $sudahLogin = isset($_SESSION['user_id']);
 
 // Prefix relatif ke root proyek ini (bukan root domain) — supaya
