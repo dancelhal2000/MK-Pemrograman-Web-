@@ -11,6 +11,11 @@ $page = max(1, (int) ($_GET['page'] ?? 1));
 $offset = ($page - 1) * $perPage;
 $keyword = trim($_GET['q'] ?? '');
 
+// Latihan 6.4 (no. 1): Proteksi CSRF pada form pencarian
+if (isset($_GET['q'])) {
+    csrf_verify_get();
+}
+
 if ($keyword !== '') {
     $hitung = $pdo->prepare("SELECT COUNT(*) FROM buku WHERE judul ILIKE :kw");
     $hitung->execute(['kw' => '%' . $keyword . '%']);
@@ -38,6 +43,7 @@ $totalPages = max(1, (int) ceil($totalRows / $perPage));
 
             <div class="search-box">
                 <form method="get" action="list.php">
+                    <?php echo csrf_field(); ?>
                     <span>
                         <label for="search-input">Cari Judul Buku</label><br>
                         <input type="text" id="search-input" name="q" value="<?php echo e($keyword); ?>" placeholder="Ketik judul buku...">
@@ -86,7 +92,7 @@ $totalPages = max(1, (int) ceil($totalRows / $perPage));
 
             <nav class="pagination">
                 <?php for ($i = 1; $i <= $totalPages; $i++): ?>
-                <a href="list.php?page=<?php echo $i; ?><?php echo $keyword !== '' ? '&q=' . urlencode($keyword) : ''; ?>"
+                <a href="list.php?page=<?php echo $i; ?><?php echo $keyword !== '' ? '&q=' . urlencode($keyword) . '&csrf_token=' . urlencode(csrf_token()) : ''; ?>"
                    class="<?php echo $i === $page ? 'active' : ''; ?>"><?php echo $i; ?></a>
                 <?php endfor; ?>
             </nav>
