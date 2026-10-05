@@ -17,5 +17,8 @@ try {
     $pdo = new PDO("pgsql:host=$host;port=$port;dbname=$dbname", $username, $password);
     $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 } catch (PDOException $e) {
-    die("Koneksi database gagal: " . $e->getMessage());
+    // Catat detail error ke log server (tidak terlihat pengguna)
+    error_log('SIMPUS-Mini DB error: ' . $e->getMessage());
+    // Tampilkan pesan umum tanpa membocorkan detail teknis
+    die("Koneksi database gagal. Silakan hubungi administrator.");
 }
