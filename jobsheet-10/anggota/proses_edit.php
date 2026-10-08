@@ -13,12 +13,32 @@ if (!$id) {
     exit;
 }
 
+// Validasi server-side
 $errors = [];
+
+// 1. Validasi field wajib diisi
 if ($nama === '') {
     $errors[] = "Nama wajib diisi.";
+} elseif (strlen($nama) < 3) {
+    $errors[] = "Nama minimal 3 karakter.";
 }
+
 if ($noAnggota === '') {
     $errors[] = "No. Anggota wajib diisi.";
+}
+
+// 2. Cek keunikan No. Anggota selain data yang sedang diedit
+if ($noAnggota !== '') {
+    $cek = $pdo->prepare("SELECT COUNT(*) FROM anggota WHERE no_anggota = :no_anggota AND id != :id");
+    $cek->execute(['no_anggota' => $noAnggota, 'id' => $id]);
+    if ($cek->fetchColumn() > 0) {
+        $errors[] = "No. Anggota sudah terdaftar.";
+    }
+}
+
+// 3. Validasi format No. HP (opsional, jika diisi hanya angka/simbol telepon)
+if ($noHp !== '' && !preg_match('/^[0-9+\s-]+$/', $noHp)) {
+    $errors[] = "No. HP hanya boleh berisi angka, spasi, tanda +, atau tanda -.";
 }
 
 if (!empty($errors)) {
@@ -27,17 +47,28 @@ if (!empty($errors)) {
     exit;
 }
 
-$stmt = $pdo->prepare(
-    "UPDATE anggota SET nama = :nama, no_anggota = :no_anggota,
-     alamat = :alamat, no_hp = :no_hp WHERE id = :id"
-);
-$stmt->execute([
-    'nama' => $nama,
-    'no_anggota' => $noAnggota,
-    'alamat' => $alamat,
-    'no_hp' => $noHp,
-    'id' => $id,
-]);
+try {
+    $stmt = $pdo->prepare(
+        "UPDATE anggota SET nama = :nama, no_anggota = :no_anggota,
+         alamat = :alamat, no_hp = :no_hp WHERE id = :id"
+    );
+    $stmt->execute([
+        'nama' => $nama,
+        'no_anggota' => $noAnggota,
+        'alamat' => $alamat,
+        'no_hp' => $noHp,
+        'id' => $id,
+    ]);
+} catch (PDOException $e) {
+    if ($e->getCode() === '23505' || stripos($e->getMessage(), 'unique') !== false || stripos($e->getMessage(), 'duplicate') !== false) {
+        $pesan = "No. Anggota sudah dipakai, gunakan nomor lain.";
+    } else {
+        $pesan = "Gagal memperbarui data anggota: " . $e->getMessage();
+    }
+    $_SESSION['flash'] = ['type' => 'error', 'pesan' => $pesan];
+    header('Location: edit.php?id=' . urlencode($id));
+    exit;
+}
 
 $_SESSION['flash'] = ['type' => 'success', 'pesan' => 'Anggota berhasil diperbarui.'];
 header('Location: list.php');

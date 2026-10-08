@@ -17,7 +17,10 @@ $daftarAnggota = $pdo->query("SELECT * FROM anggota ORDER BY id DESC")->fetchAll
 
             <div class="search-box">
                 <label for="search-input">Cari Nama Anggota</label>
-                <input type="text" id="search-input" placeholder="Ketik nama anggota...">
+                <div class="search-actions">
+                    <input type="text" id="search-input" placeholder="Ketik nama anggota...">
+                    <button type="button" id="btn-reload" class="btn-reload">Muat Ulang</button>
+                </div>
             </div>
 
             <div class="table-responsive">
@@ -39,10 +42,10 @@ $daftarAnggota = $pdo->query("SELECT * FROM anggota ORDER BY id DESC")->fetchAll
                     <?php else: ?>
                         <?php foreach ($daftarAnggota as $anggota): ?>
                         <tr>
-                            <td><?php echo $anggota['no_anggota']; ?></td>
-                            <td><?php echo $anggota['nama']; ?></td>
-                            <td><?php echo $anggota['alamat']; ?></td>
-                            <td><?php echo $anggota['no_hp']; ?></td>
+                            <td><?php echo htmlspecialchars($anggota['no_anggota']); ?></td>
+                            <td><?php echo htmlspecialchars($anggota['nama']); ?></td>
+                            <td><?php echo htmlspecialchars($anggota['alamat']); ?></td>
+                            <td><?php echo htmlspecialchars($anggota['no_hp']); ?></td>
                             <td>
                                 <button type="button">Edit</button>
                                 <button type="button" class="btn-hapus">Hapus</button>

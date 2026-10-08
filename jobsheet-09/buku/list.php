@@ -12,12 +12,14 @@ $offset = ($page - 1) * $perPage;
 $keyword = trim($_GET['q'] ?? '');
 
 if ($keyword !== '') {
-    $hitung = $pdo->prepare("SELECT COUNT(*) FROM buku WHERE judul ILIKE :kw");
-    $hitung->execute(['kw' => '%' . $keyword . '%']);
+    $searchPattern = '%' . $keyword . '%';
+    $hitung = $pdo->prepare("SELECT COUNT(*) FROM buku WHERE (judul ILIKE :kw1 OR pengarang ILIKE :kw2)");
+    $hitung->execute(['kw1' => $searchPattern, 'kw2' => $searchPattern]);
     $totalRows = $hitung->fetchColumn();
 
-    $stmt = $pdo->prepare("SELECT * FROM buku WHERE judul ILIKE :kw ORDER BY id DESC LIMIT :limit OFFSET :offset");
-    $stmt->bindValue('kw', '%' . $keyword . '%');
+    $stmt = $pdo->prepare("SELECT * FROM buku WHERE (judul ILIKE :kw1 OR pengarang ILIKE :kw2) ORDER BY id DESC LIMIT :limit OFFSET :offset");
+    $stmt->bindValue('kw1', $searchPattern);
+    $stmt->bindValue('kw2', $searchPattern);
 } else {
     $totalRows = $pdo->query("SELECT COUNT(*) FROM buku")->fetchColumn();
     $stmt = $pdo->prepare("SELECT * FROM buku ORDER BY id DESC LIMIT :limit OFFSET :offset");
@@ -38,11 +40,12 @@ $totalPages = max(1, (int) ceil($totalRows / $perPage));
 
             <div class="search-box">
                 <form method="get" action="list.php">
-                    <span>
-                        <label for="search-input">Cari Judul Buku</label><br>
-                        <input type="text" id="search-input" name="q" value="<?php echo $keyword; ?>" placeholder="Ketik judul buku...">
-                    </span>
-                    <button type="submit">Cari</button>
+                    <label for="search-input">Cari Judul / Pengarang Buku</label>
+                    <div class="search-actions">
+                        <input type="text" id="search-input" name="q" value="<?php echo htmlspecialchars($keyword); ?>" placeholder="Ketik judul atau pengarang buku...">
+                        <button type="submit" class="btn-cari">Cari</button>
+                        <button type="button" id="btn-reload" class="btn-reload">Muat Ulang</button>
+                    </div>
                 </form>
             </div>
 
@@ -52,25 +55,36 @@ $totalPages = max(1, (int) ceil($totalRows / $perPage));
                     <tr>
                         <th>Judul</th>
                         <th>Pengarang</th>
+                        <th>Kategori</th>
                         <th>Tahun</th>
                         <th>Stok</th>
+                        <th>Ditambahkan</th>
                         <th>Aksi</th>
                     </tr>
                 </thead>
                 <tbody>
                     <?php if (empty($daftarBuku)): ?>
                     <tr>
-                        <td colspan="5">Tidak ada data buku yang cocok.</td>
+                        <td colspan="7">
+                            <?php if ($keyword !== ''): ?>
+                                Tidak ada data buku yang cocok dengan kata kunci "<strong><?php echo htmlspecialchars($keyword); ?></strong>".
+                            <?php else: ?>
+                                Belum ada data buku. Silakan tambah lewat menu "Tambah Buku".
+                            <?php endif; ?>
+                        </td>
                     </tr>
                     <?php else: ?>
                         <?php foreach ($daftarBuku as $buku): ?>
                         <tr>
-                            <td><?php echo $buku['judul']; ?></td>
-                            <td><?php echo $buku['pengarang']; ?></td>
-                            <td><?php echo $buku['tahun']; ?></td>
-                            <td><?php echo $buku['stok']; ?></td>
+                            <td><?php echo htmlspecialchars($buku['judul']); ?></td>
+                            <td><?php echo htmlspecialchars($buku['pengarang']); ?></td>
+                            <td><?php echo htmlspecialchars(ucfirst($buku['kategori'] ?? '-')); ?></td>
+                            <td><?php echo htmlspecialchars($buku['tahun']); ?></td>
+                            <td><?php echo htmlspecialchars($buku['stok']); ?></td>
+                            <td><?php echo !empty($buku['tanggal_ditambahkan']) ? htmlspecialchars(date('d-m-Y H:i', strtotime($buku['tanggal_ditambahkan']))) : '-'; ?></td>
                             <td>
                                 <a href="edit.php?id=<?php echo $buku['id']; ?>" class="btn-edit">Edit</a>
+                                <button type="button" class="detail">Detail</button>
                                 <form class="form-hapus" method="post" action="hapus.php">
                                     <input type="hidden" name="id" value="<?php echo $buku['id']; ?>">
                                     <button type="submit" class="btn-hapus">Hapus</button>

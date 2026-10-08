@@ -32,19 +32,20 @@ if (!$buku) {
                 <input type="hidden" name="id" value="<?php echo $buku['id']; ?>">
                 <p>
                     <label for="judul">Judul</label><br>
-                    <input type="text" id="judul" name="judul" value="<?php echo $buku['judul']; ?>" required>
+                    <input type="text" id="judul" name="judul" value="<?php echo htmlspecialchars($buku['judul']); ?>" required>
                 </p>
                 <p>
                     <label for="pengarang">Pengarang</label><br>
-                    <input type="text" id="pengarang" name="pengarang" value="<?php echo $buku['pengarang']; ?>" required>
+                    <input type="text" id="pengarang" name="pengarang" value="<?php echo htmlspecialchars($buku['pengarang']); ?>" required>
                 </p>
                 <p>
                     <label for="tahun">Tahun Terbit</label><br>
-                    <input type="number" id="tahun" name="tahun" min="1900" max="2026" value="<?php echo $buku['tahun']; ?>" required>
+                    <input type="number" id="tahun" name="tahun" min="1900" max="2026" value="<?php echo htmlspecialchars($buku['tahun']); ?>" required>
                 </p>
                 <p>
-                    <label for="isbn">ISBN</label><br>
-                    <input type="text" id="isbn" name="isbn" value="<?php echo $buku['isbn']; ?>">
+                    <label for="isbn">ISBN (Opsional)</label><br>
+                    <input type="text" id="isbn" name="isbn" value="<?php echo htmlspecialchars($buku['isbn'] ?? ''); ?>" placeholder="Contoh: 978-602-03-8591-4">
+                    <small class="error-msg" id="error-isbn"></small>
                 </p>
                 <p>
                     <label for="stok">Stok</label><br>

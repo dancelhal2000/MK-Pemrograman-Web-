@@ -10,7 +10,8 @@ CREATE TABLE IF NOT EXISTS buku (
     tahun INTEGER NOT NULL,
     isbn VARCHAR(50),
     stok INTEGER NOT NULL DEFAULT 0,
-    kategori VARCHAR(50)
+    kategori VARCHAR(50),
+    tanggal_ditambahkan TIMESTAMP DEFAULT NOW()
 );
 
 CREATE TABLE IF NOT EXISTS anggota (

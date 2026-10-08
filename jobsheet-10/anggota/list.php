@@ -13,12 +13,14 @@ $offset = ($page - 1) * $perPage;
 $keyword = trim($_GET['q'] ?? '');
 
 if ($keyword !== '') {
-    $hitung = $pdo->prepare("SELECT COUNT(*) FROM anggota WHERE nama ILIKE :kw");
-    $hitung->execute(['kw' => '%' . $keyword . '%']);
+    $searchPattern = '%' . $keyword . '%';
+    $hitung = $pdo->prepare("SELECT COUNT(*) FROM anggota WHERE (nama ILIKE :kw1 OR no_anggota ILIKE :kw2)");
+    $hitung->execute(['kw1' => $searchPattern, 'kw2' => $searchPattern]);
     $totalRows = $hitung->fetchColumn();
 
-    $stmt = $pdo->prepare("SELECT * FROM anggota WHERE nama ILIKE :kw ORDER BY id DESC LIMIT :limit OFFSET :offset");
-    $stmt->bindValue('kw', '%' . $keyword . '%');
+    $stmt = $pdo->prepare("SELECT * FROM anggota WHERE (nama ILIKE :kw1 OR no_anggota ILIKE :kw2) ORDER BY id DESC LIMIT :limit OFFSET :offset");
+    $stmt->bindValue('kw1', $searchPattern);
+    $stmt->bindValue('kw2', $searchPattern);
 } else {
     $totalRows = $pdo->query("SELECT COUNT(*) FROM anggota")->fetchColumn();
     $stmt = $pdo->prepare("SELECT * FROM anggota ORDER BY id DESC LIMIT :limit OFFSET :offset");
@@ -39,11 +41,12 @@ $totalPages = max(1, (int) ceil($totalRows / $perPage));
 
             <div class="search-box">
                 <form method="get" action="list.php">
-                    <span>
-                        <label for="search-input">Cari Nama Anggota</label><br>
-                        <input type="text" id="search-input" name="q" value="<?php echo $keyword; ?>" placeholder="Ketik nama anggota...">
-                    </span>
-                    <button type="submit">Cari</button>
+                    <label for="search-input">Cari Nama / No. Anggota</label>
+                    <div class="search-actions">
+                        <input type="text" id="search-input" name="q" value="<?php echo htmlspecialchars($keyword); ?>" placeholder="Ketik nama atau no. anggota...">
+                        <button type="submit" class="btn-cari">Cari</button>
+                        <button type="button" id="btn-reload" class="btn-reload">Muat Ulang</button>
+                    </div>
                 </form>
             </div>
 
@@ -61,15 +64,21 @@ $totalPages = max(1, (int) ceil($totalRows / $perPage));
                 <tbody>
                     <?php if (empty($daftarAnggota)): ?>
                     <tr>
-                        <td colspan="5">Tidak ada data anggota yang cocok.</td>
+                        <td colspan="5">
+                            <?php if ($keyword !== ''): ?>
+                                Tidak ada data anggota yang cocok dengan kata kunci "<strong><?php echo htmlspecialchars($keyword); ?></strong>".
+                            <?php else: ?>
+                                Belum ada data anggota. Silakan tambah lewat menu "Tambah Anggota".
+                            <?php endif; ?>
+                        </td>
                     </tr>
                     <?php else: ?>
                         <?php foreach ($daftarAnggota as $anggota): ?>
                         <tr>
-                            <td><?php echo $anggota['no_anggota']; ?></td>
-                            <td><?php echo $anggota['nama']; ?></td>
-                            <td><?php echo $anggota['alamat']; ?></td>
-                            <td><?php echo $anggota['no_hp']; ?></td>
+                            <td><?php echo htmlspecialchars($anggota['no_anggota']); ?></td>
+                            <td><?php echo htmlspecialchars($anggota['nama']); ?></td>
+                            <td><?php echo htmlspecialchars($anggota['alamat']); ?></td>
+                            <td><?php echo htmlspecialchars($anggota['no_hp']); ?></td>
                             <td>
                                 <a href="edit.php?id=<?php echo $anggota['id']; ?>" class="btn-edit">Edit</a>
                                 <?php if (($_SESSION['role'] ?? '') === 'admin'): ?>
