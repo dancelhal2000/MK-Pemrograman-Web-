@@ -20,5 +20,5 @@ try {
     // Catat detail error ke log server (tidak terlihat pengguna)
     error_log('SIMPUS-Mini DB error: ' . $e->getMessage());
     // Tampilkan pesan umum tanpa membocorkan detail teknis
-    die("Koneksi database gagal. Silakan hubungi administrator.");
+    die("Koneksi database gagal: " . $e->getMessage());
 }
