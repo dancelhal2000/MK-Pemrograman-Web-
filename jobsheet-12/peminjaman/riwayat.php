@@ -17,7 +17,7 @@ if ($anggotaId !== '') {
 
     if ($anggotaTerpilih) {
         $stmt = $pdo->prepare(
-            "SELECT b.judul, p.tanggal_pinjam, p.tanggal_kembali, p.status
+            "SELECT b.judul, b.pengarang, p.tanggal_pinjam, p.tanggal_jatuh_tempo, p.tanggal_kembali, p.status
              FROM peminjaman p
              JOIN buku b ON b.id = p.buku_id
              WHERE p.anggota_id = :id
@@ -38,7 +38,7 @@ if ($anggotaId !== '') {
                         <option value="">-- Pilih Anggota --</option>
                         <?php foreach ($daftarAnggota as $anggota): ?>
                         <option value="<?php echo $anggota['id']; ?>" <?php echo (string) $anggotaId === (string) $anggota['id'] ? 'selected' : ''; ?>>
-                            <?php echo e($anggota['nama']); ?>
+                            <?php echo e($anggota['nama']); ?> (<?php echo e($anggota['no_anggota']); ?>)
                         </option>
                         <?php endforeach; ?>
                     </select>
@@ -49,13 +49,15 @@ if ($anggotaId !== '') {
             </form>
 
             <?php if ($anggotaTerpilih): ?>
-            <h3>Riwayat &mdash; <?php echo e($anggotaTerpilih['nama']); ?></h3>
+            <h3>Riwayat &mdash; <?php echo e($anggotaTerpilih['nama']); ?> (No. HP: <?php echo e($anggotaTerpilih['no_hp'] ?: '-'); ?>)</h3>
             <div class="table-responsive">
             <table>
                 <thead>
                     <tr>
                         <th>Buku</th>
+                        <th>Pengarang</th>
                         <th>Pinjam</th>
+                        <th>Jatuh Tempo</th>
                         <th>Kembali</th>
                         <th>Status</th>
                     </tr>
@@ -63,13 +65,15 @@ if ($anggotaId !== '') {
                 <tbody>
                     <?php if (empty($riwayat)): ?>
                     <tr>
-                        <td colspan="4">Belum ada riwayat peminjaman.</td>
+                        <td colspan="6">Belum ada riwayat peminjaman.</td>
                     </tr>
                     <?php else: ?>
                         <?php foreach ($riwayat as $r): ?>
                         <tr>
                             <td><?php echo e($r['judul']); ?></td>
+                            <td><?php echo e($r['pengarang']); ?></td>
                             <td><?php echo e($r['tanggal_pinjam']); ?></td>
+                            <td><?php echo e($r['tanggal_jatuh_tempo'] ?? '-'); ?></td>
                             <td><?php echo e($r['tanggal_kembali'] ?? '-'); ?></td>
                             <td><?php echo $r['status'] === 'dipinjam' ? 'Dipinjam' : 'Selesai'; ?></td>
                         </tr>

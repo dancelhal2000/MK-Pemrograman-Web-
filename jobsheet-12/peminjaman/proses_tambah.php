@@ -36,6 +36,8 @@ try {
     $cek->execute(['id' => $bukuId]);
     $buku = $cek->fetch(PDO::FETCH_ASSOC);
 
+    sleep(5);
+
     if (!$buku || $buku['stok'] < 1) {
         throw new Exception('Stok buku tidak tersedia.');
     }
